@@ -1,0 +1,95 @@
+// Prisma-schema för Emilia Falks skyttedashboard (SQLite).
+// SQLite stödjer inte Prisma-enum/Json-scalar, därför används String för dessa
+// (t.ex. role och shots som JSON-serialiserad sträng).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String?
+  passwordHash String
+  role         String     @default("ADMIN")
+  createdAt    DateTime   @default(now())
+  news         NewsPost[]
+}
+
+model Competition {
+  id          String    @id @default(cuid())
+  name        String
+  date        DateTime
+  location    String?
+  discipline  String    @default("Luftgevär stående")
+  description String?
+  isCompleted Boolean   @default(false)
+  results     Result[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([date])
+}
+
+model Result {
+  id            String       @id @default(cuid())
+  date          DateTime
+  matchType     Int // Antal skott i serien, t.ex. 40 eller 60
+  // JSON-serialiserad array av skottvärden (float 0.0–10.9), ett per skott.
+  shots         String
+  // Denormaliserade aggregat, beräknas vid spara.
+  total         Float        @default(0)
+  shotCount     Int          @default(0)
+  average       Float        @default(0)
+  note          String?
+  competition   Competition? @relation(fields: [competitionId], references: [id], onDelete: SetNull)
+  competitionId String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([date])
+}
+
+model NewsPost {
+  id          String   @id @default(cuid())
+  title       String
+  body        String
+  imagePath   String?
+  publishedAt DateTime @default(now())
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([publishedAt])
+}
+
+model Sponsor {
+  id        String   @id @default(cuid())
+  name      String
+  logoPath  String
+  url       String?
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
+model Merit {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  placement   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+}

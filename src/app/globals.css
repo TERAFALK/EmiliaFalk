@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Roboto laddas via @fontsource i layout.tsx (bundlad, offline-vänlig). */
+
+/* Vogue för rubriker – self-hostas. Lägg filen i public/fonts/vogue.woff2.
+   Saknas filen används serif-fallback (bygget påverkas inte). */
+@font-face {
+  font-family: "Vogue";
+  src: url("/fonts/vogue.woff2") format("woff2"),
+       url("/fonts/vogue.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-heading: "Vogue";
+  --font-body: "Roboto";
+  --pink: #ff69b4;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: #1a1a1f;
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading), Georgia, serif;
+  letter-spacing: 0.02em;
+}
+
+/* Subtil rosa bakgrundsgradient i toppen av sidan. */
+.hero-gradient {
+  background:
+    radial-gradient(1200px 400px at 50% -120px, rgba(255, 105, 180, 0.18), transparent 70%);
+}
+
+/* Diskret rutnätsmönster för dekor. */
+.dot-grid {
+  background-image: radial-gradient(rgba(255, 105, 180, 0.15) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+::selection {
+  background: rgba(255, 105, 180, 0.28);
+}

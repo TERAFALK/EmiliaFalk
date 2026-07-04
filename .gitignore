@@ -1,0 +1,30 @@
+node_modules
+.next
+out
+build
+dist
+
+# Env & secrets
+.env
+.env.local
+.env*.local
+
+# Databas & uppladdningar (lokala)
+data
+uploads
+*.db
+*.db-journal
+
+# Prisma genererad klient
+prisma/generated
+
+# Fontfiler (self-hostas, se public/fonts/README.md)
+public/fonts/*.woff2
+public/fonts/*.woff
+public/fonts/*.ttf
+public/fonts/*.otf
+
+# Diverse
+.DS_Store
+*.log
+next-env.d.ts

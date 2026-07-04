@@ -1,0 +1,32 @@
+services:
+  web:
+    build: .
+    image: emilia-falk-skytte
+    container_name: emilia-web
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    volumes:
+      - emilia_data:/app/data # SQLite-databasen
+      - emilia_uploads:/app/uploads # Sponsor-/nyhetsbilder
+    networks:
+      - npm
+    # NPM ligger på samma host och samma nätverk och proxar internt mot
+    # http://emilia-web:3000 – ingen publik port behöver exponeras.
+    # Vill du nå appen direkt (utan NPM), avkommentera:
+    # ports:
+    #   - "3000:3000"
+
+volumes:
+  emilia_data:
+  emilia_uploads:
+
+networks:
+  npm:
+    external: true
+    # Namnet på det befintliga nätverk som Nginx Proxy Manager använder.
+    # Sätts via NPM_NETWORK i .env.
+    name: ${NPM_NETWORK:-npm_network}
