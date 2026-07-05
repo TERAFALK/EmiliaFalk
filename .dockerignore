@@ -2,8 +2,9 @@ node_modules
 .next
 .git
 .gitignore
-data
-uploads
+# Ankra till projektroten så att t.ex. src/app/api/uploads INTE exkluderas.
+/data
+/uploads
 *.db
 .env
 .env.local
