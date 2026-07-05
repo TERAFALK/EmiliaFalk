@@ -115,19 +115,42 @@ export function ImageUpload({
 
   async function handleFile(file: File) {
     setError(null);
+    // Tidig kontroll så användaren slipper vänta på ett serverfel.
+    if (file.size > 4 * 1024 * 1024) {
+      setError("Filen är för stor (max 4 MB). Komprimera eller välj en mindre bild.");
+      return;
+    }
     setUploading(true);
     try {
       const form = new FormData();
       form.append("file", file);
       const res = await fetch("/api/uploads", { method: "POST", body: form });
-      const data = await res.json();
+
       if (!res.ok) {
-        setError(data.error || "Uppladdning misslyckades");
+        // 413 kommer ofta från proxyn (NPM) innan appen ens svarar – då är
+        // svaret inte JSON, så vi hanterar det separat.
+        if (res.status === 413) {
+          setError(
+            "Filen är för stor och avvisades av servern. Prova en mindre bild, " +
+              "eller höj gränsen i proxyn (client_max_body_size)."
+          );
+        } else {
+          let msg = `Uppladdning misslyckades (fel ${res.status})`;
+          try {
+            const data = await res.json();
+            if (data?.error) msg = data.error;
+          } catch {
+            /* svaret var inte JSON */
+          }
+          setError(msg);
+        }
         return;
       }
+
+      const data = await res.json();
       onChange(data.path);
     } catch {
-      setError("Uppladdning misslyckades");
+      setError("Uppladdning misslyckades – kontrollera anslutningen och försök igen.");
     } finally {
       setUploading(false);
     }
@@ -162,6 +185,8 @@ export function ImageUpload({
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
+                // Nollställ så att samma fil kan väljas igen efter ett fel.
+                e.target.value = "";
                 if (f) handleFile(f);
               }}
             />

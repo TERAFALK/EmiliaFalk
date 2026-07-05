@@ -9,6 +9,7 @@ const ALLOWED = new Map<string, string>([
   ["image/png", "png"],
   ["image/jpeg", "jpg"],
   ["image/webp", "webp"],
+  ["image/avif", "avif"],
   ["image/gif", "gif"],
   ["image/svg+xml", "svg"],
 ]);
@@ -23,7 +24,10 @@ export type SaveResult =
 export async function saveUpload(file: File): Promise<SaveResult> {
   const ext = ALLOWED.get(file.type);
   if (!ext) {
-    return { ok: false, error: "Otillåten filtyp (använd PNG, JPG, WEBP, GIF eller SVG)." };
+    return {
+      ok: false,
+      error: "Otillåten filtyp (använd PNG, JPG, WEBP, AVIF, GIF eller SVG).",
+    };
   }
   if (file.size > MAX_BYTES) {
     return { ok: false, error: "Filen är för stor (max 4 MB)." };
@@ -56,6 +60,7 @@ const CONTENT_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   webp: "image/webp",
+  avif: "image/avif",
   gif: "image/gif",
   svg: "image/svg+xml",
 };
