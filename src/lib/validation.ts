@@ -1,17 +1,32 @@
 import { z } from "zod";
 
-const shotSchema = z
-  .number()
-  .min(0, "Skott kan inte vara mindre än 0,0")
-  .max(10.9, "Skott kan inte vara mer än 10,9");
-
-export const resultSchema = z.object({
-  date: z.string().min(1, "Datum krävs"),
-  matchType: z.number().int().positive("Ange antal skott"),
-  shots: z.array(shotSchema).min(1, "Minst ett skott krävs"),
-  competitionId: z.string().nullish(),
-  note: z.string().max(500).nullish(),
-});
+export const resultSchema = z
+  .object({
+    date: z.string().min(1, "Datum krävs"),
+    matchType: z.number().int().positive("Ange antal skott"),
+    entryMode: z.enum(["shots", "series"]).default("shots"),
+    // Värden är antingen enskilda skott (0–10,9) eller serietotaler (0–109).
+    shots: z
+      .array(z.number().min(0, "Värdet kan inte vara negativt").max(109))
+      .min(1, "Minst ett värde krävs"),
+    competitionId: z.string().nullish(),
+    note: z.string().max(500).nullish(),
+  })
+  .superRefine((data, ctx) => {
+    const max = data.entryMode === "series" ? 109 : 10.9;
+    data.shots.forEach((v, i) => {
+      if (v > max) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["shots", i],
+          message:
+            data.entryMode === "series"
+              ? "En serie kan inte vara mer än 109,0"
+              : "Ett skott kan inte vara mer än 10,9",
+        });
+      }
+    });
+  });
 
 export const competitionSchema = z.object({
   name: z.string().min(1, "Namn krävs").max(200),

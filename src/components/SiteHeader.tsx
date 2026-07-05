@@ -8,6 +8,7 @@ const NAV = [
   { href: "/", label: "Översikt" },
   { href: "/resultat", label: "Resultat" },
   { href: "/tavlingar", label: "Tävlingar" },
+  { href: "/meriter", label: "Meriter" },
   { href: "/nyheter", label: "Nyheter" },
 ];
 

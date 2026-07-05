@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { AdminResult, CompetitionOption } from "@/lib/adminTypes";
 import { formatScore, toDateInputValue } from "@/lib/stats";
 import ShotGrid from "@/components/admin/ShotGrid";
+import SeriesInput from "@/components/admin/SeriesInput";
 import {
   Field,
   TextInput,
@@ -19,6 +20,7 @@ type FormState = {
   id: string | null;
   date: string;
   matchType: number;
+  entryMode: "shots" | "series";
   competitionId: string;
   note: string;
   shots: number[];
@@ -29,6 +31,7 @@ function emptyForm(): FormState {
     id: null,
     date: toDateInputValue(new Date()),
     matchType: 60,
+    entryMode: "shots",
     competitionId: "",
     note: "",
     shots: [],
@@ -58,6 +61,7 @@ export default function ResultsAdmin({
       id: r.id,
       date: r.date,
       matchType: r.matchType,
+      entryMode: r.entryMode,
       competitionId: r.competitionId ?? "",
       note: r.note ?? "",
       shots: r.shots,
@@ -67,7 +71,11 @@ export default function ResultsAdmin({
   async function save() {
     if (!form) return;
     if (form.shots.length === 0) {
-      setError("Fyll i minst ett skott.");
+      setError(
+        form.entryMode === "series"
+          ? "Fyll i minst en serie."
+          : "Fyll i minst ett skott."
+      );
       return;
     }
     setSaving(true);
@@ -76,6 +84,7 @@ export default function ResultsAdmin({
       const payload = {
         date: form.date,
         matchType: form.matchType,
+        entryMode: form.entryMode,
         shots: form.shots,
         competitionId: form.competitionId || null,
         note: form.note || null,
@@ -177,14 +186,53 @@ export default function ResultsAdmin({
           </div>
 
           <div className="mt-5">
-            <span className="mb-2 block text-sm font-medium text-ink-soft">
-              Skott (0,0–10,9)
-            </span>
-            <ShotGrid
-              matchType={form.matchType}
-              value={form.shots}
-              onChange={(shots) => setForm({ ...form, shots })}
-            />
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm font-medium text-ink-soft">
+                Inmatning
+              </span>
+              <div className="inline-flex rounded-full border border-pink-200 p-0.5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setForm({ ...form, entryMode: "shots", shots: [] })
+                  }
+                  className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                    form.entryMode === "shots"
+                      ? "bg-pink-500 text-white"
+                      : "text-ink-soft hover:text-pink-700"
+                  }`}
+                >
+                  Skott för skott
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setForm({ ...form, entryMode: "series", shots: [] })
+                  }
+                  className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                    form.entryMode === "series"
+                      ? "bg-pink-500 text-white"
+                      : "text-ink-soft hover:text-pink-700"
+                  }`}
+                >
+                  Hela serier
+                </button>
+              </div>
+            </div>
+
+            {form.entryMode === "shots" ? (
+              <ShotGrid
+                matchType={form.matchType}
+                value={form.shots}
+                onChange={(shots) => setForm({ ...form, shots })}
+              />
+            ) : (
+              <SeriesInput
+                matchType={form.matchType}
+                value={form.shots}
+                onChange={(shots) => setForm({ ...form, shots })}
+              />
+            )}
           </div>
 
           <div className="mt-4">

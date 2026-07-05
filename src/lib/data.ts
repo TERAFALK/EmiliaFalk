@@ -12,6 +12,7 @@ export async function getResults(): Promise<ResultLike[]> {
     id: r.id,
     date: r.date,
     matchType: r.matchType,
+    entryMode: r.entryMode,
     shots: r.shots,
     total: r.total,
     shotCount: r.shotCount,

@@ -1,7 +1,7 @@
 import { getResults } from "@/lib/data";
 import {
   parseShots,
-  seriesTotals,
+  resultSeries,
   resultTrend,
   formatDate,
 } from "@/lib/stats";
@@ -22,15 +22,18 @@ export default async function ResultatPage() {
   const views: ResultView[] = [...results]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .map((r) => {
-      const shots = parseShots(r.shots);
+      const values = parseShots(r.shots);
+      const entryMode: "shots" | "series" =
+        r.entryMode === "series" ? "series" : "shots";
       return {
         id: r.id,
         dateLabel: formatDate(r.date),
         matchType: r.matchType,
+        entryMode,
         total: r.total,
         average: r.average,
-        shots,
-        series: seriesTotals(shots),
+        shots: entryMode === "shots" ? values : [],
+        series: resultSeries(entryMode, values),
         competitionName: r.competition?.name ?? null,
         note: r.note ?? null,
       };

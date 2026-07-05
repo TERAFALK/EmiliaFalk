@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin, badRequest } from "@/lib/api";
 import { resultSchema } from "@/lib/validation";
-import { computeAggregates } from "@/lib/stats";
+import { computeResultAggregates } from "@/lib/stats";
 
 export const runtime = "nodejs";
 
@@ -14,13 +14,14 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return badRequest("Valideringsfel", parsed.error.flatten());
   }
-  const { date, matchType, shots, competitionId, note } = parsed.data;
-  const agg = computeAggregates(shots);
+  const { date, matchType, entryMode, shots, competitionId, note } = parsed.data;
+  const agg = computeResultAggregates(entryMode, shots, matchType);
 
   const result = await prisma.result.create({
     data: {
       date: new Date(date),
       matchType,
+      entryMode,
       shots: JSON.stringify(shots),
       total: agg.total,
       shotCount: agg.shotCount,

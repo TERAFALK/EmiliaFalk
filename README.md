@@ -39,11 +39,11 @@ på en volym.
 4. **Peka NPM mot appen.** Appen ligger på samma Docker-nätverk som Nginx Proxy Manager
    (namnet i `NPM_NETWORK`). Skapa en Proxy Host i NPM med:
    - Forward Hostname: `emilia-web`
-   - Forward Port: `3000`
+   - Forward Port: `80`
    - (Aktivera SSL som vanligt.)
 
 > Vill du köra utan NPM, avkommentera `ports:` i `docker-compose.yml` så nås appen på
-> `http://<host>:3000`.
+> `http://<host>:8080`.
 
 ## Administrera
 - Gå till `https://din-domän/admin` och logga in med `ADMIN_EMAIL` / `ADMIN_PASSWORD`.

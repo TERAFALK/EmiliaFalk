@@ -40,7 +40,10 @@ model Result {
   id            String       @id @default(cuid())
   date          DateTime
   matchType     Int // Antal skott i serien, t.ex. 40 eller 60
-  // JSON-serialiserad array av skottvärden (float 0.0–10.9), ett per skott.
+  // Inmatningssätt: "shots" = ett värde per skott (0.0–10.9),
+  // "series" = ett värde per serie om 10 skott (0.0–109.0).
+  entryMode     String       @default("shots")
+  // JSON-serialiserad array av värden enligt entryMode ovan.
   shots         String
   // Denormaliserade aggregat, beräknas vid spara.
   total         Float        @default(0)

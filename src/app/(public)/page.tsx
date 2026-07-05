@@ -13,12 +13,21 @@ import {
   formatDate,
 } from "@/lib/stats";
 import StatCard from "@/components/StatCard";
+import HeroSlider from "@/components/HeroSlider";
 import ResultChart from "@/components/charts/ResultChart";
 import NewsCard from "@/components/NewsCard";
 import SponsorStrip from "@/components/SponsorStrip";
 import { Card, SectionHeader, Badge, EmptyState } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
+
+const HERO_IMAGES = [
+  "/hero/hero-1.avif",
+  "/hero/hero-2.avif",
+  "/hero/hero-3.avif",
+  "/hero/hero-4.avif",
+  "/hero/hero-5.avif",
+];
 
 export default async function DashboardPage() {
   const [results, upcoming, news, merits, sponsors] = await Promise.all([
@@ -34,12 +43,12 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="hero-gradient border-b border-pink-100">
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
+      {/* Hero med bildslider */}
+      <HeroSlider images={HERO_IMAGES}>
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:py-28">
           <div className="flex flex-col items-center text-center">
             <Badge>Luftgevär · stående</Badge>
-            <h1 className="mt-4 font-heading text-5xl leading-tight text-ink sm:text-7xl">
+            <h1 className="mt-4 font-heading text-5xl leading-tight text-ink drop-shadow-sm sm:text-7xl">
               Emilia Falk
             </h1>
             <p className="mt-4 max-w-xl text-base text-ink-soft sm:text-lg">
@@ -55,14 +64,14 @@ export default async function DashboardPage() {
               </Link>
               <Link
                 href="/tavlingar"
-                className="rounded-full border border-pink-200 bg-white px-6 py-3 text-sm font-semibold text-pink-700 transition hover:bg-pink-50"
+                className="rounded-full border border-pink-200 bg-white/80 px-6 py-3 text-sm font-semibold text-pink-700 backdrop-blur transition hover:bg-pink-50"
               >
                 Kommande tävlingar
               </Link>
             </div>
           </div>
         </div>
-      </section>
+      </HeroSlider>
 
       <div className="mx-auto max-w-6xl px-5 py-12">
         {/* Stat-kort */}
@@ -154,7 +163,15 @@ export default async function DashboardPage() {
           </section>
 
           <section>
-            <SectionHeader title="Meriter" subtitle="Utmärkelser och placeringar" />
+            <SectionHeader
+              title="Meriter"
+              subtitle="Utmärkelser och placeringar"
+              action={
+                <Link href="/meriter" className="text-sm font-medium text-pink-700 hover:underline">
+                  Alla meriter →
+                </Link>
+              }
+            />
             {merits.length === 0 ? (
               <EmptyState>Inga meriter inlagda ännu.</EmptyState>
             ) : (

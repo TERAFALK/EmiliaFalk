@@ -33,6 +33,7 @@ export default async function AdminPage() {
         id: r.id,
         date: toDateInputValue(r.date),
         matchType: r.matchType,
+        entryMode: r.entryMode === "series" ? "series" : "shots",
         shots: parseShots(r.shots),
         total: r.total,
         average: r.average,

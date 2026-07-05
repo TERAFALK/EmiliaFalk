@@ -9,9 +9,10 @@ export type ResultView = {
   id: string;
   dateLabel: string;
   matchType: number;
+  entryMode: "shots" | "series";
   total: number;
   average: number;
-  shots: number[];
+  shots: number[]; // enskilda skott (endast i "shots"-läge)
   series: number[];
   competitionName: string | null;
   note: string | null;
@@ -59,7 +60,11 @@ export default function ResultCard({ result }: { result: ResultView }) {
             </p>
           )}
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div
+            className={`grid gap-6 ${
+              result.entryMode === "shots" ? "lg:grid-cols-2" : "grid-cols-1"
+            }`}
+          >
             <div>
               <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
                 Serier ({result.series.length} × 10 skott)
@@ -67,12 +72,14 @@ export default function ResultCard({ result }: { result: ResultView }) {
               <SeriesChart series={result.series} />
             </div>
 
-            <div>
-              <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
-                Alla skott
-              </h4>
-              <ShotGridView shots={result.shots} />
-            </div>
+            {result.entryMode === "shots" && (
+              <div>
+                <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                  Alla skott
+                </h4>
+                <ShotGridView shots={result.shots} />
+              </div>
+            )}
           </div>
         </div>
       )}

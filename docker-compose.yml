@@ -8,17 +8,17 @@ services:
       - .env
     environment:
       NODE_ENV: production
-      PORT: "3000"
+      PORT: "80"
     volumes:
       - emilia_data:/app/data # SQLite-databasen
       - emilia_uploads:/app/uploads # Sponsor-/nyhetsbilder
     networks:
       - npm
     # NPM ligger på samma host och samma nätverk och proxar internt mot
-    # http://emilia-web:3000 – ingen publik port behöver exponeras.
+    # http://emilia-web:80 – ingen publik port behöver exponeras.
     # Vill du nå appen direkt (utan NPM), avkommentera:
     # ports:
-    #   - "3000:3000"
+    #   - "8080:80"
 
 volumes:
   emilia_data:

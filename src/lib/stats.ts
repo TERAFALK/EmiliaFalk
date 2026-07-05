@@ -3,11 +3,14 @@
 
 export const SHOTS_PER_SERIES = 10;
 
+export type EntryMode = "shots" | "series";
+
 export type ResultLike = {
   id: string;
   date: Date | string;
   matchType: number;
-  shots: string; // JSON-serialiserad number[]
+  entryMode: string;
+  shots: string; // JSON-serialiserad number[] (skott eller serietotaler)
   total: number;
   shotCount: number;
   average: number;
@@ -52,6 +55,39 @@ export function seriesTotals(shots: number[]): number[] {
     series.push(round1(chunk.reduce((s, v) => s + v, 0)));
   }
   return series;
+}
+
+/**
+ * Beräknar aggregat oavsett inmatningssätt.
+ * - "shots": ett värde per skott (0.0–10.9).
+ * - "series": ett värde per serie om 10 skott; snitt/skott = total / matchType.
+ */
+export function computeResultAggregates(
+  entryMode: string,
+  values: number[],
+  matchType: number
+): { total: number; shotCount: number; average: number } {
+  const total = round1(values.reduce((s, v) => s + v, 0));
+  if (entryMode === "series") {
+    const shotCount = matchType > 0 ? matchType : values.length * SHOTS_PER_SERIES;
+    return {
+      total,
+      shotCount,
+      average: shotCount > 0 ? round2(total / shotCount) : 0,
+    };
+  }
+  const shotCount = values.length;
+  return {
+    total,
+    shotCount,
+    average: shotCount > 0 ? round2(total / shotCount) : 0,
+  };
+}
+
+/** Returnerar serietotaler för visning, oavsett inmatningssätt. */
+export function resultSeries(entryMode: string, values: number[]): number[] {
+  if (entryMode === "series") return values.map((v) => round1(v));
+  return seriesTotals(values);
 }
 
 /** Validerar ett enskilt skottvärde (0.0–10.9). */

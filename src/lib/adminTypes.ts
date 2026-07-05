@@ -4,7 +4,8 @@ export type AdminResult = {
   id: string;
   date: string; // YYYY-MM-DD
   matchType: number;
-  shots: number[];
+  entryMode: "shots" | "series";
+  shots: number[]; // enskilda skott ELLER serietotaler, enligt entryMode
   total: number;
   average: number;
   note: string | null;
