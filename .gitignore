@@ -9,11 +9,12 @@ dist
 .env.local
 .env*.local
 
-# Databas & uppladdningar (lokala)
-data
-uploads
-*.db
-*.db-journal
+# Databas & uppladdningar (lokala) – ankrade till roten så att t.ex.
+# src/app/api/uploads INTE ignoreras.
+/data
+/uploads
+/*.db
+/*.db-journal
 
 # Prisma genererad klient
 prisma/generated
